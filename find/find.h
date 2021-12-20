@@ -29,7 +29,7 @@ void helpCommand(char status);
 /**
  * Find file with system calls
  */
-char findFile(char *path, char *pattern);
+char findFile(char *path, char *pattern, char status);
 
 /**
  * Check file type

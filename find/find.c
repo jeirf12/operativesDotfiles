@@ -1,16 +1,19 @@
 #include "find.h"
+#include <stdio.h>
+#include <string.h>
 
 int main(int argc, char *argv[]){
-  char status;
+  char status = 0;
   if (argc != 3) {
     if(argc == 2) {
       if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) helpCommand(0);
+      else helpCommand(1);
     } else {
       helpCommand(1);
     }
     return EXIT_FAILURE;
   }
-  status = findFile(argv[1], argv[2]);
+  status = findFile(argv[1], argv[2], status);
   if (status == 0) {
     printf("%sEl patron de busqueda no se ha encontrado%s\n", PURPLECOLOUR, ENDCOLOUR);
   } 
@@ -27,29 +30,31 @@ void helpCommand(char status){
   }
 }
 
-char findFile(char *path, char *pattern){
+char findFile(char *path, char *pattern, char status){
   DIR *directory;
   struct dirent *content;
   struct stat fileStat;
-  char *path2, *name2, status = 0;
+  char *path2, *name2;
 
   directory = opendir(path);
-  while ((content = readdir(directory))) {
-    if (content->d_name[0] != '.') {
-      name2 = content->d_name;
-      path2 = malloc(strlen(path) + strlen(name2) + 2);
-      strcpy(path2, path);
-      if (!equalsRegex("/$", path2)) strcat(path2, "/");
-      strcat(path2, name2);
-      stat(path2, &fileStat);
-      mode_t mode = fileStat.st_mode;
-      if (strstr(name2, pattern)) { 
-        status = 1;
-        printf("%s%s%s\n", GREENCOLOUR, path2, ENDCOLOUR);
+  if (directory != NULL){
+    while ((content = readdir(directory))) {
+      if ((strcmp(content->d_name, ".") != 0) && (strcmp(content->d_name, "..") != 0)) {
+        name2 = content->d_name;
+        path2 = malloc(strlen(path) + strlen(name2) + 2);
+        strcpy(path2, path);
+        if (!equalsRegex("/$", path2)) strcat(path2, "/");
+        strcat(path2, name2);
+        stat(path2, &fileStat);
+        mode_t mode = fileStat.st_mode;
+        if (strstr(name2, pattern)) { 
+          status = 1;
+          printf("%s%s%s\n", GREENCOLOUR, path2, ENDCOLOUR);
+        }
+        if (isDirectory(mode)) { 
+          status = findFile(path2, pattern, status);
+        }   
       }
-      if (isDirectory(mode)) { 
-        status = findFile(path2, pattern);
-      }   
     }
   }
   closedir(directory);
