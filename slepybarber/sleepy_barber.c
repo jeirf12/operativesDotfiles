@@ -1,42 +1,9 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <semaphore.h>
-#include <pthread.h>
-#include <unistd.h>
-
-#define N 10
-
-sem_t seats;
-sem_t seat_barber; 
-sem_t barber_cut;
-sem_t barber_sleep;
-sem_t beard_end[N];
-
-char attends, sleep_barber = 1;
-
-void down(sem_t *s){
-  sem_wait(s);
-}
-
-void up(sem_t *s){
-  sem_post(s);
-}
-
-void *barber(void *arg);
-void *clients(void *arg);
-
-void arrived_client(int id);
-void wakeup_barber(int id);
-void sleeping_barber();
-void wait_client(int id);
-void start_beard_trim(int id);
-void end_beard_trim(int id);
+#include "sleepy_barber.h"
 
 int main(int argc, char *argv[]){
   pthread_t bar_pthread, cli_pthread[N];
   int ids[N];
   int customer_index;
-  attends = 0;
   sem_init(&seats, 0, N);
   sem_init(&seat_barber, 0, 1);
   sem_init(&barber_cut, 0, 1);
@@ -102,4 +69,12 @@ void start_beard_trim(int id){
 
 void end_beard_trim(int id){
   printf("finished cut %d client\n", id);
+}
+
+void down(sem_t *s){
+  sem_wait(s);
+}
+
+void up(sem_t *s){
+  sem_post(s);
 }
