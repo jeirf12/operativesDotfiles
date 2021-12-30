@@ -4,14 +4,15 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define N 10
+#define N 5
 
 sem_t seats;
 sem_t seat_barber; 
 sem_t barber_cut;
 sem_t barber_sleep;
-sem_t beard_end[N];
-char sleep_barber = 1;
+sem_t beard_end[10];
+sem_t seats_full;
+char remainingChairs = N, sleep_barber = 1;
 
 /**
  * Methods semaphores
