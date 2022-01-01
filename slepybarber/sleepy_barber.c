@@ -74,12 +74,12 @@ void wait_client(int id){
 
 void start_beard_trim(int id){
   printf("Beard trim cliente %d \n", id);
+  ++remainingChairs;
+  seats_counter();
 }
 
 void end_beard_trim(int id){
   printf("finished cut %d client\n", id);
-  ++remainingChairs;
-  seats_counter();
 }
 
 void seats_counter(){

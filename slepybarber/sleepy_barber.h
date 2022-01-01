@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define NSI 8 //Define number of seats
+#define NSI 5 //Define number of seats
 #define NCLI 10 //Define number of customers
 
 sem_t seats;
