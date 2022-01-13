@@ -1,8 +1,13 @@
-all: find.o 
-	gcc -o find find.o
+ifeq ($(OS),Windows_NT)
+	remove := del
+	archives := find.exe
+else
+	remove := rm
+	archives := find
+endif
 
-compile: find.c
-	gcc -o -c find.o find.c
+all: 
+	@gcc -o find find.c
 
 clean:
-	rm -rf find find.o
+	@$(remove) $(archives)
