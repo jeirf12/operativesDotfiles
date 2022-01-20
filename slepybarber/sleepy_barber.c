@@ -24,16 +24,15 @@ int main(int argc, char *argv[]){
     }
   }
   pthread_join(bar_pthread, NULL);
+  pthread_join(cli_pthread[NCLI-1], NULL);
   return EXIT_SUCCESS;
 }
 
 void *barber(void *arg){
-  while (1){
-    down(&barber_sleep);
-    sleeping_barber();
-    seats_counter();
-    up(&seats);
-  }
+  down(&barber_sleep);
+  sleeping_barber();
+  seats_counter();
+  up(&seats);
 }
 
 void *clients(void *arg){
