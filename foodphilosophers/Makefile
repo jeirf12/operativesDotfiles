@@ -6,7 +6,6 @@ ifeq ($(OS), Windows_NT)
 	archives := test.exe
 endif
 
-
 all:
 	@$(compiler) -o $(archives) foodphilosopher.c -pthread
 
