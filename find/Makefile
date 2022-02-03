@@ -1,13 +1,17 @@
+compiler := gcc
+remove := rm
+archives := find
+
 ifeq ($(OS),Windows_NT)
 	remove := del
 	archives := find.exe
-else
-	remove := rm
-	archives := find
 endif
 
 all: 
-	@gcc -o find find.c
+	@$(compiler) -o $(archives) find.c
+
+run:
+	@./$(archives)
 
 clean:
 	@$(remove) $(archives)

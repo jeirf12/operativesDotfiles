@@ -1,13 +1,17 @@
+compiler := gcc
 remove := rm
 archives := test
 
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS), Windows_NT)
 	remove := del
 	archives := test.exe
 endif
 
 all:
-	@gcc sleepy_barber.c -pthread -o test
+	@$(compiler) sleepy_barber.c -pthread -o $(archives)
+
+run:
+	@./$(archives)
 
 clean:
 	@$(remove) $(archives)

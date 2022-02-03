@@ -1,13 +1,14 @@
 compiler := gcc
-remove := rm -f
+remove := rm
 archives := test
+
 ifeq ($(OS), Windows_NT)
-	remove := del /q
+	remove := del
 	archives := test.exe
 endif
 
 all:
-	@$(compiler) -o $(archives) foodphilosopher.c -pthread
+	@$(compiler) foodphilosopher.c -pthread -o $(archives)
 
 run:
 	@./$(archives)
