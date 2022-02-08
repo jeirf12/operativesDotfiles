@@ -10,15 +10,16 @@
 
 const char *path = "/tmp/mysocket";
 
-int selectOperation(char *chain);
-int sum(int operand1, int operand2);
-int subtract(int operand1, int operand2);
-int multiplication(int operand1, int operand2);
-int division(int operand1, int operand2);
+double selectOperation(char *chain);
+double sum(int operand1, int operand2);
+double subtract(int operand1, int operand2);
+double multiplication(int operand1, int operand2);
+double division(int operand1, int operand2);
 int isNumeric(char *chain);
 
 int main(int argc, char * argv[]){
-  int idserver, clielen, result, c, resultOperation;
+  int idserver, clielen, result, c;
+  double resultOperation;
   char buf[BUFSZ], line[BUFSZ];
   struct sockaddr_un server;
   struct sockaddr_un client;
@@ -57,7 +58,7 @@ int main(int argc, char * argv[]){
     buf[strlen(buf) - 1] = '\0';
     resultOperation = selectOperation(buf);
     if (resultOperation == -1) strcpy(line, "Digito mal los argumentos");
-    else sprintf(line, "%d", resultOperation);
+    else sprintf(line, "%1.3f", resultOperation);
     if(send(c, line, BUFSZ, 0) == -1){
       perror("Error write from server");
       exit(EXIT_FAILURE);
@@ -68,9 +69,10 @@ int main(int argc, char * argv[]){
   unlink(path);
 }
 
-int selectOperation(char *chain){
+double selectOperation(char *chain){
   char *token, *option;
-  int operand1, operand2, result = -1;
+  int operand1, operand2;
+  double result = -1;
   option = ((token = strtok(chain, " ")) != NULL) ? token : "0" ;
   operand1 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : -1 ;
   operand2 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : -1 ;
@@ -89,19 +91,19 @@ int selectOperation(char *chain){
   return result;
 }
 
-int sum(int operand1, int operand2){
+double sum(int operand1, int operand2){
   return operand1 + operand2;
 }
 
-int subtract(int operand1, int operand2){
+double subtract(int operand1, int operand2){
   return operand1 - operand2;
 }
 
-int multiplication(int operand1, int operand2){
+double multiplication(int operand1, int operand2){
   return operand1 * operand2;
 }
 
-int division(int operand1, int operand2){
+double division(int operand1, int operand2){
   return operand1 / operand2;
 }
 
