@@ -8,13 +8,14 @@
 #include <ctype.h>
 #define BUFSZ 108
 
+char error;
 const char *path = "/tmp/mysocket";
 
 double selectOperation(char *chain);
-double sum(int operand1, int operand2);
-double subtract(int operand1, int operand2);
-double multiplication(int operand1, int operand2);
-double division(int operand1, int operand2);
+double sum(double operand1, double operand2);
+double subtract(double operand1, double operand2);
+double multiplication(double operand1, double operand2);
+double division(double operand1, double operand2);
 int isNumeric(char *chain);
 
 int main(int argc, char * argv[]){
@@ -56,9 +57,11 @@ int main(int argc, char * argv[]){
     }
     printf("Envia el cliente: %s\n", buf);
     buf[strlen(buf) - 1] = '\0';
+    error = 0;
     resultOperation = selectOperation(buf);
-    if (resultOperation == -1) strcpy(line, "Digito mal los argumentos");
-    else sprintf(line, "%1.3f", resultOperation);
+    if (error == -1) strcpy(line, "Digito mal los argumentos");
+    else if (error == -2) strcpy(line, "No se puede dividir por cero");
+    else sprintf(line, "%1.2f", resultOperation);
     if(send(c, line, BUFSZ, 0) == -1){
       perror("Error write from server");
       exit(EXIT_FAILURE);
@@ -71,12 +74,15 @@ int main(int argc, char * argv[]){
 
 double selectOperation(char *chain){
   char *token, *option;
-  int operand1, operand2;
-  double result = -1;
+  double operand1, operand2, result = -1;
   option = ((token = strtok(chain, " ")) != NULL) ? token : "0" ;
   operand1 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : -1 ;
+  operand1 = (token[0] == '-') ? atoi(token): isNumeric(token);
   operand2 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : -1 ;
-  if (operand1 == -1 || operand2 == -1) {
+  operand2 = (token[0] == '-') ? atoi(token): isNumeric(token);
+  if (operand1 == -1 || operand2 == -1 || (operand2 == 0 && strstr(option, "/"))) {
+    error = -1;
+    if (operand2 == 0) error = -2;
     return result;
   }
   if (strstr(option, "+")) {
@@ -91,19 +97,19 @@ double selectOperation(char *chain){
   return result;
 }
 
-double sum(int operand1, int operand2){
+double sum(double operand1, double operand2){
   return operand1 + operand2;
 }
 
-double subtract(int operand1, int operand2){
+double subtract(double operand1, double operand2){
   return operand1 - operand2;
 }
 
-double multiplication(int operand1, int operand2){
+double multiplication(double operand1, double operand2){
   return operand1 * operand2;
 }
 
-double division(int operand1, int operand2){
+double division(double operand1, double operand2){
   return operand1 / operand2;
 }
 
