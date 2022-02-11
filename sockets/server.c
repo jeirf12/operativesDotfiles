@@ -76,11 +76,9 @@ double selectOperation(char *chain){
   char *token, *option;
   double operand1, operand2, result = -1;
   option = ((token = strtok(chain, " ")) != NULL) ? token : "0" ;
-  operand1 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : -1 ;
-  operand1 = (token[0] == '-') ? atoi(token): isNumeric(token);
-  operand2 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : -1 ;
-  operand2 = (token[0] == '-') ? atoi(token): isNumeric(token);
-  if (operand1 == -1 || operand2 == -1 || (operand2 == 0 && strstr(option, "/"))) {
+  operand1 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : error-- ;
+  operand2 = ((token = strtok(NULL, " ")) != NULL) ? isNumeric(token) : error-- ;
+  if (error <= -1 || (operand2 == 0 && strstr(option, "/"))) {
     error = -1;
     if (operand2 == 0) error = -2;
     return result;
@@ -116,6 +114,7 @@ double division(double operand1, double operand2){
 
 int isNumeric(char *chain){
   char *ptr = chain;
+  if(chain[0] == '-') ptr++;
   while (*ptr && isdigit(*ptr)) ptr++;
-  return (*ptr ? -1: atoi(chain));
+  return (*ptr ? error--: atoi(chain));
 }
