@@ -21,16 +21,17 @@
  */
 regex_t regex;
 int amount = 0;
+char status = 0;
 
 /**
  * Show help for utility command find
  */
-void helpCommand(char status);
+void helpCommand();
 
 /**
  * Find file with system calls
  */
-char findFile(char *path, char *pattern, char status);
+void findFile(char *path, char *pattern);
 
 /**
  * Check file type

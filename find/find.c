@@ -1,19 +1,17 @@
 #include "find.h"
 
 int main(int argc, char *argv[]) {
-  char status = 0;
   if (argc != 3) {
     if (argc == 2) {
       if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
-        helpCommand(0);
+        helpCommand();
       else
-        helpCommand(1);
-    } else {
-      helpCommand(1);
-    }
+        helpCommand();
+    } else
+      helpCommand();
     return EXIT_FAILURE;
   }
-  status = findFile(argv[1], argv[2], status);
+  findFile(argv[1], argv[2]);
   if (status == 0) {
     printf("%sEl patron de busqueda no se ha encontrado%s\n", PURPLECOLOUR,
            ENDCOLOUR);
@@ -23,7 +21,7 @@ int main(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
-void helpCommand(char status) {
+void helpCommand() {
   if (status == 0) {
     printf("%s./find%s  %s/path/to/file/ nameFileFind%s\n", PURPLECOLOUR,
            ENDCOLOUR, YELLOWCOLOUR, ENDCOLOUR);
@@ -38,7 +36,7 @@ void helpCommand(char status) {
   }
 }
 
-char findFile(char *path, char *pattern, char status) {
+void findFile(char *path, char *pattern) {
   DIR *directory;
   struct dirent *content;
   struct stat fileStat;
@@ -63,13 +61,12 @@ char findFile(char *path, char *pattern, char status) {
           printf("%s%s%s\n", GREENCOLOUR, path2, ENDCOLOUR);
         }
         if (isDirectory(mode)) {
-          status = findFile(path2, pattern, status);
+          findFile(path2, pattern);
         }
       }
     }
   }
   closedir(directory);
-  return status;
 }
 
 char isDirectory(mode_t mode) {
