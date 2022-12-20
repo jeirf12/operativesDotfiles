@@ -20,6 +20,7 @@
  * Global variables
  */
 regex_t regex;
+int amount = 0;
 
 /**
  * Show help for utility command find
