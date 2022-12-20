@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <sys/un.h>
 #include <unistd.h>
 #define BUFSIZE 108
 
-const char * path = "/tmp/mysocket";
+const char *path = "/tmp/mysocket";
 
-int main(int argc, char * argv[]){
+int main(int argc, char *argv[]) {
   int soc, numBytes;
   struct sockaddr_un server;
   char buff[BUFSIZE], line[BUFSIZE];
@@ -27,7 +27,7 @@ int main(int argc, char * argv[]){
     return EXIT_FAILURE;
   }
 
-  while (!feof(stdin)){
+  while (!feof(stdin)) {
     fgets(line, BUFSIZE, stdin);
     if (write(soc, line, BUFSIZE) == -1) {
       perror("Write failed for client");
@@ -44,5 +44,4 @@ int main(int argc, char * argv[]){
   }
 
   close(soc);
-  printf("paso el cliente por aqui\n");
 }
