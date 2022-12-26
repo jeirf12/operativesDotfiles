@@ -20,7 +20,9 @@
  * Global variables
  */
 regex_t regex;
-int amount = 0;
+int amountFiles = 0;
+int amountFolders = 0;
+int flagFolders = 0;
 char status = 0;
 
 /**
@@ -42,3 +44,8 @@ char isDirectory(mode_t mode);
  * Compare strings with regular expression
  */
 char equalsRegex(char *pattern, char *chain);
+
+/**
+ * Verified flag of help in arguments
+ */
+char verifiedFlags(int size, char *args[]);

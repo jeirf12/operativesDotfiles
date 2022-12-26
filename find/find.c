@@ -1,24 +1,34 @@
 #include "find.h"
 
 int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    if (argc == 2) {
-      if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
-        helpCommand();
-      else
-        helpCommand();
-    } else
+  char verified = verifiedFlags(argc, argv);
+  if (argc != 3 || verified) {
+    if (argc == 2 && verified) {
       helpCommand();
+      return EXIT_FAILURE;
+    }
+    status = 1;
+    helpCommand();
     return EXIT_FAILURE;
   }
   findFile(argv[1], argv[2]);
   if (status == 0) {
-    printf("%sEl patron de busqueda no se ha encontrado%s\n", PURPLECOLOUR,
+    printf("%sEl patrón de búsqueda no se ha encontrado%s\n", PURPLECOLOUR,
            ENDCOLOUR);
   }
-  printf("\n%s Se han encontrado %s%d%s %sarchivos en la busqueda %s\n",
-         GREENCOLOUR, PURPLECOLOUR, amount, ENDCOLOUR, GREENCOLOUR, ENDCOLOUR);
+  printf("\n%s Se han encontrado %s%d%s %sarchivos y %s%d%s %scarpetas en la "
+         "búsqueda %s\n",
+         PURPLECOLOUR, GREENCOLOUR, amountFiles, ENDCOLOUR, PURPLECOLOUR,
+         BLUECOLOUR, amountFolders, ENDCOLOUR, PURPLECOLOUR, ENDCOLOUR);
   return EXIT_SUCCESS;
+}
+
+char verifiedFlags(int size, char *args[]) {
+  return size > 2
+             ? ((strcmp(args[1], "-h") == 0 ||
+                 strcmp(args[1], "--help") == 0) ||
+                (strcmp(args[2], "-h") == 0 || strcmp(args[2], "--help") == 0))
+             : (strcmp(args[1], "-h") == 0 || strcmp(args[1], "--help") == 0);
 }
 
 void helpCommand() {
@@ -26,13 +36,14 @@ void helpCommand() {
     printf("%s./find%s  %s/path/to/file/ nameFileFind%s\n", PURPLECOLOUR,
            ENDCOLOUR, YELLOWCOLOUR, ENDCOLOUR);
     printf("\t%s/path/to/file/%s %sRuta o directorio donde desea empezar la "
-           "busqueda%s\n",
+           "búsqueda%s\n",
            YELLOWCOLOUR, ENDCOLOUR, BLUECOLOUR, ENDCOLOUR);
     printf("\t%snameFileFind%s   %sNombre del archivo a buscar%s\n",
            YELLOWCOLOUR, ENDCOLOUR, BLUECOLOUR, ENDCOLOUR);
   } else if (status == 1) {
-    printf("%sEspecifique un patron de busqueda. Ver ayuda -h o --help%s\n",
-           REDCOLOUR, ENDCOLOUR);
+    printf(
+        "%sEspecifique un patrón de búsqueda válido. Ver ayuda -h o --help%s\n",
+        REDCOLOUR, ENDCOLOUR);
   }
 }
 
@@ -45,6 +56,7 @@ void findFile(char *path, char *pattern) {
   directory = opendir(path);
   if (directory != NULL) {
     while ((content = readdir(directory))) {
+      flagFolders = 0;
       if ((strcmp(content->d_name, ".") != 0) &&
           (strcmp(content->d_name, "..") != 0)) {
         name2 = content->d_name;
@@ -57,10 +69,16 @@ void findFile(char *path, char *pattern) {
         mode_t mode = fileStat.st_mode;
         if (strstr(name2, pattern)) {
           status = 1;
-          amount++;
-          printf("%s%s%s\n", GREENCOLOUR, path2, ENDCOLOUR);
+          amountFiles++;
+          ++flagFolders;
+          isDirectory(mode) ? printf("%s%s%s\n", BLUECOLOUR, path2, ENDCOLOUR)
+                            : printf("%s%s%s\n", GREENCOLOUR, path2, ENDCOLOUR);
         }
         if (isDirectory(mode)) {
+          if (++flagFolders == 2) {
+            amountFolders++;
+            amountFiles--;
+          }
           findFile(path2, pattern);
         }
       }
@@ -69,11 +87,7 @@ void findFile(char *path, char *pattern) {
   closedir(directory);
 }
 
-char isDirectory(mode_t mode) {
-  if (S_ISDIR(mode))
-    return 1;
-  return 0;
-}
+char isDirectory(mode_t mode) { return S_ISDIR(mode); }
 
 char equalsRegex(char *pattern, char *chain) {
   int request;
