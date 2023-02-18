@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     buf[strlen(buf) - 1] = '\0';
     error = 0;
     resultOperation = selectOperation(buf);
-    if (error < 0) strcpy(line, "Digito mal los argumentos");
+    if (error < 0) strcpy(line, "Digito mal alguno de los argumentos\n\t\t   Ejemplo: operador operando1 operando2");
     else if (error > 0) strcpy(line, "No se puede dividir por cero");
     else sprintf(line, "%1.2f", resultOperation);
     if (send(c, line, BUFSZ, 0) == -1) {
@@ -93,6 +93,7 @@ double selectOperation(char *chain) {
     case '-': result = subtract(operand1, operand2); break;
     case '/': result = division(operand1, operand2); break;
     case '*': result = multiplication(operand1, operand2); break;
+    default: error = -1; break;
   }
   return result;
 }
